@@ -1,4 +1,4 @@
-<% security_groups.each do |security_group| -%>
+<% security_groups.sort_by(&:security_group_id).each do |security_group| -%>
 resource "aws_security_group" "<%= module_name_of(security_group) %>" {
     name        = "<%= security_group.group_name %>"
     description = "<%= security_group.description %>"
@@ -14,10 +14,10 @@ resource "aws_security_group" "<%= module_name_of(security_group) %>" {
         prefix_list_ids = <%= permission.prefix_list_ids.map { |range| range.prefix_list_id }.inspect %>
 <%- end -%>
 <%- if permission.ip_ranges.length > 0 -%>
-        cidr_blocks     = <%= permission.ip_ranges.map { |range| range.cidr_ip }.inspect %>
+        cidr_blocks     = <%= permission.ip_ranges.map { |range| range.cidr_ip }.sort.inspect %>
 <%- end -%>
 <%- if permission.ipv_6_ranges.length > 0 -%>
-        ipv6_cidr_blocks     = <%= permission.ipv_6_ranges.map { |range| range.cidr_ipv_6 }.inspect %>
+        ipv6_cidr_blocks     = <%= permission.ipv_6_ranges.map { |range| range.cidr_ipv_6 }.sort.inspect %>
 <%- end -%>
 <%- if permission.user_id_group_pairs.length > 0 -%>
   <%- self_referenced = self_referenced_permission?(security_group, permission) -%>
@@ -37,10 +37,10 @@ resource "aws_security_group" "<%= module_name_of(security_group) %>" {
         prefix_list_ids = <%= permission.prefix_list_ids.map { |range| range.prefix_list_id }.inspect %>
 <%- end -%>
 <%- if permission.ip_ranges.length > 0 -%>
-        cidr_blocks     = <%= permission.ip_ranges.map { |range| range.cidr_ip }.inspect %>
+        cidr_blocks     = <%= permission.ip_ranges.map { |range| range.cidr_ip }.sort.inspect %>
 <%- end -%>
 <%- if permission.ipv_6_ranges.length > 0 -%>
-        ipv6_cidr_blocks     = <%= permission.ipv_6_ranges.map { |range| range.cidr_ipv_6 }.inspect %>
+        ipv6_cidr_blocks     = <%= permission.ipv_6_ranges.map { |range| range.cidr_ipv_6 }.sort.inspect %>
 <%- end -%>
 <%- if permission.user_id_group_pairs.length > 0 -%>
   <%- self_referenced = self_referenced_permission?(security_group, permission) -%>

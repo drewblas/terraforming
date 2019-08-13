@@ -6,7 +6,7 @@ resource "aws_route53_record" "dns-<%= module_name_of(record, counter) %>" {
     name    = "<%= name_of(record.name.sub(/\\052/, '*')) %>"
     type    = "<%= record.type %>"
 <%- unless record.resource_records.empty? -%>
-    records = <%= record.resource_records.map(&:value).to_s %>
+    records = <%= record.resource_records.map(&:value).sort.to_s %>
 <%- end -%>
 <%- if record.ttl -%>
     ttl     = "<%= record.ttl %>"

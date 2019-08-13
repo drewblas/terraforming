@@ -1,4 +1,4 @@
-<% records.each do |r| -%>
+<% records.sort_by(&:name).each do |r| -%>
   <%- record, zone_id = r[:record], r[:zone_id] -%>
   <%- counter = r[:counter] -%>
 resource "aws_route53_record" "dns-<%= module_name_of(record, counter) %>" {

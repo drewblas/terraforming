@@ -1,4 +1,4 @@
-<% security_groups.sort_by(&:security_group_id).each do |security_group| -%>
+<% security_groups.sort_by { |g| module_name_of(g) }.each do |security_group| -%>
 resource "aws_security_group" "<%= module_name_of(security_group) %>" {
     name        = "<%= security_group.group_name %>"
     description = "<%= security_group.description %>"
@@ -34,7 +34,7 @@ resource "aws_security_group" "<%= module_name_of(security_group) %>" {
         to_port         = <%= permission.to_port || 0 %>
         protocol        = "<%= permission.ip_protocol %>"
 <%- if permission.prefix_list_ids.length > 0 -%>
-        prefix_list_ids = <%= permission.prefix_list_ids.map { |range| range.prefix_list_id }.inspect %>
+        prefix_list_ids = <%= permission.prefix_list_ids.map { |range| range.prefix_list_id }.sort.inspect %>
 <%- end -%>
 <%- if permission.ip_ranges.length > 0 -%>
         cidr_blocks     = <%= permission.ip_ranges.map { |range| range.cidr_ip }.sort.inspect %>

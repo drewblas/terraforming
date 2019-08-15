@@ -63,7 +63,6 @@ module Terraforming
       def network_interfaces
         interfaces = @client.describe_network_interfaces.map(&:network_interfaces).flatten
         ordered = interfaces.sort_by(&:network_interface_id)
-        $stderr.puts "wtf is going on #{ordered[0]}"
         return ordered
       end
     end

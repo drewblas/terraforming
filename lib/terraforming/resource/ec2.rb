@@ -68,12 +68,25 @@ module Terraforming
       private
 
       def block_device_ids_of(instance)
-        instance.block_device_mappings.map { |bdm| bdm.ebs.volume_id }
+        instance.block_device_mappings.map { |bdm| bdm.ebs.volume_id }.sort
+      end
+
+      def spawned_from_auto_scaling_group?(instance)
+        # we don't want to include instances that have been instantiated by an autoscaler
+        # they all will have the same hostname which breaks terraform.
+        instance.tags.each do |tag|
+            if tag.key == "aws:autoscaling:groupName"
+                return true
+            end
+        end
+        return false
       end
 
       def block_devices_of(instance)
         return [] if instance.block_device_mappings.empty?
-        @client.describe_volumes(volume_ids: block_device_ids_of(instance)).map(&:volumes).flatten
+        devices = @client.describe_volumes(volume_ids: block_device_ids_of(instance)).map(&:volumes).flatten
+        devices = devices.sort_by(&:volume_id)
+        return devices
       end
 
       def block_device_mapping_of(instance, volume_id)
@@ -123,7 +136,8 @@ module Terraforming
       end
 
       def vpc_security_groups_of(instance)
-        instance.security_groups.select { |security_group| /\Asg-/ =~ security_group.group_id }
+        sgs = instance.security_groups.select { |security_group| /\Asg-/ =~ security_group.group_id }
+        return sgs.sort_by { |g| g.group_id }
       end
     end
   end

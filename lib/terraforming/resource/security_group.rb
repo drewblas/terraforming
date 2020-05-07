@@ -126,8 +126,7 @@ module Terraforming
           else
             result.concat(perms)
           end
-
-          result
+          return result.sort_by(&:to_port)
         end
       end
 

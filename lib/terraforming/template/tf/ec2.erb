@@ -1,5 +1,5 @@
-<% instances.each do |instance| -%>
-resource "aws_instance" "<%= module_name_of(instance) %>" {
+<% instances.reject {|i| spawned_from_auto_scaling_group?(i) }.each do |instance| -%>
+resource "aws_instance" "<%= module_name_of(instance) + "-" + instance.private_ip_address.gsub(".", "-") %>" {
     ami                         = "<%= instance.image_id %>"
     availability_zone           = "<%= instance.placement.availability_zone %>"
     ebs_optimized               = <%= instance.ebs_optimized %>
@@ -46,7 +46,7 @@ resource "aws_instance" "<%= module_name_of(instance) %>" {
 <% end -%>
 
 <% end -%>
-    tags {
+    tags = {
 <% instance.tags.each do |tag| -%>
         "<%= tag.key %>" = "<%= tag.value %>"
 <% end -%>
